@@ -5,7 +5,7 @@ resources:
       repository: dwp/dataworks-cognito
       access_token: ((dataworks-secrets.concourse_github_pat))
     webhook_token: ((dataworks.concourse_github_webhook_token))
-    check_every: 720h
+    check_every: 1m
 
   - name: dataworks-cognito
     type: git
@@ -14,4 +14,17 @@ resources:
       uri: https://github.com/dwp/dataworks-cognito.git
       access_token: ((dataworks-secrets.concourse_github_pat))
     webhook_token: ((dataworks.concourse_github_webhook_token))
-    check_every: 720h
+    check_every: 5m
+
+  - name: dataworks-cognito-users
+    type: git
+    source:
+      branch: master
+      api_endpoint: https://((dataworks.enterprise_github_url))/api/v3/
+      username: ((dataworks.enterprise_github_username))
+      password: ((dataworks-secrets.enterprise_github_pat))
+      uri: https://((dataworks.enterprise_github_url))/dip/dataworks-secrets.git
+      paths:
+        - concourse/dataworks/concourse-cognito/**
+    check_every: 5m
+    webhook_token: ((dataworks.concourse_github_webhook_token))
