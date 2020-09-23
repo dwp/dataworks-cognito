@@ -1,6 +1,7 @@
 SHELL:=bash
 
 aws_profile=default
+aws_profile_mgt_dev=dataworks-management-dev
 aws_region=eu-west-2
 
 default: help
@@ -11,10 +12,11 @@ help:
 
 .PHONY: bootstrap
 bootstrap: ## Bootstrap local environment for first use
-	@make git-hooks
-	pip3 install --user Jinja2 PyYAML boto3
+	make git-hooks
+	#pip3 install --user Jinja2 PyYAML boto3
 	@{ \
 		export AWS_PROFILE=$(aws_profile); \
+		export AWS_PROFILE_MGT_DEV=$(aws_profile_mgt_dev); \
 		export AWS_REGION=$(aws_region); \
 		python3 bootstrap_terraform.py; \
 	}

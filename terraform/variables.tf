@@ -13,3 +13,9 @@ variable "region" {
   type    = string
   default = "eu-west-2"
 }
+
+variable "clients" {
+  type        = list(string)
+  default     = ["dataworks", ]
+  description = "List of named client/group pairs"
+}
