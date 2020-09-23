@@ -1,0 +1,13 @@
+jobs:
+  - name: management-dev-user-admin
+    plan:
+      - get: dataworks-cognito-users
+        trigger: true
+      - .: (( inject meta.plan.create-users ))
+        config:
+          params:
+            AWS_ACC: ((aws_account.management-dev))
+      - .: (( inject meta.plan.delete-users ))
+        config:
+          params:
+            AWS_ACC: ((aws_account.management-dev))
