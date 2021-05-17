@@ -199,5 +199,11 @@ module "cognito" {
 
   root_dns_names = values(local.root_dns_name)
   domain         = local.cognito_domain
-  loadbalancer   = data.terraform_remote_state.aws_concourse.outputs.loadbalancer
+  loadbalancer   = [
+          "object",
+          {
+            "fqdn": "string",
+            "security_group_id": "string"
+          }
+        ]
 }

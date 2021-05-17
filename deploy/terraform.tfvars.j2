@@ -3,24 +3,6 @@ parent_domain_name    = "{{dataworks_domain_name}}"
 whitelist_cidr_blocks = ["{{ucfs['team_cidr_block']}}"]
 
 enterprise_github_url = "{{enterprise_github_url}}"
-concourse_web_config = {
-  database_username = "{{database_username}}"
-  database_password = "{{database_password}}"
-  enterprise_github_url = "{{enterprise_github_url}}"
-  concourse_user = "{{concourse_user}}"
-  concourse_password = "{{concourse_password}}"
-  enterprise_github_oauth_client_id = "{{enterprise_github_oauth_client_id}}"
-  enterprise_github_oauth_client_secret = "{{enterprise_github_oauth_client_secret}}"
-  session_signing_key = <<-EOF
-  "{{session_signing_key}}"
-  EOF
-  tsa_host_key = <<-EOF
-  "{{tsa_host_key}}"
-  EOF
-  authorized_worker_keys = <<-EOF
-  "{{authorized_worker_keys}}"
-  EOF
-}
 
 concourse_worker_config = {
   tsa_host_pub_key = <<-EOF
