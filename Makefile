@@ -1,6 +1,7 @@
 SHELL:=bash
 
 aws_profile=default
+aws_profile_mgt_dev=dataworks-management-dev
 aws_region=eu-west-2
 
 default: help
@@ -9,12 +10,18 @@ default: help
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
+
+bootstrap: bootstrap-terraform 
+
+create-workspaces: bootstrap-terraform terraform-workspace-new
+
 .PHONY: bootstrap
-bootstrap: ## Bootstrap local environment for first use
+bootstrap-terraform: ## Bootstrap local environment for first use
 	@make git-hooks
-	pip3 install --user Jinja2 PyYAML boto3
+	#pip3 install --user Jinja2 PyYAML boto3
 	@{ \
 		export AWS_PROFILE=$(aws_profile); \
+		export AWS_PROFILE_MGT_DEV=$(aws_profile_mgt_dev); \
 		export AWS_REGION=$(aws_region); \
 		python3 bootstrap_terraform.py; \
 	}
@@ -38,6 +45,13 @@ terraform-plan: ## Run `terraform plan` from repo root
 terraform-apply: ## Run `terraform apply` from repo root
 	terraform apply
 
+
 .PHONY: terraform-workspace-new
 terraform-workspace-new: ## Creates new Terraform workspace with Concourse remote execution. Run `terraform-workspace-new workspace=<workspace_name>`
-	fly -t aws-concourse execute --config create-workspace.yml --input repo=. -v workspace="$(workspace)"
+	declare -a workspace=( management-dev management ) \
+	make bootstrap ; \
+	cp deploy/terraform.tf deploy/jeff.tf && \
+	for i in "$${workspace[@]}" ; do \
+		fly -t aws-concourse execute --config create-workspace.yml --input repo=. -v workspace="$$i" ; \
+	done
+	rm deploy/jeff.tf
