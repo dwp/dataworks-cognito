@@ -1,20 +1,6 @@
 assume_role = "administrator"
 parent_domain_name    = "{{dataworks_domain_name}}"
-whitelist_cidr_blocks = ["{{ucfs['team_cidr_block']}}"]
+# whitelist_cidr_blocks = ["{{ucfs['team_cidr_block']}}"]
 
 enterprise_github_url = "{{enterprise_github_url}}"
 
-concourse_worker_config = {
-  tsa_host_pub_key = <<-EOF
-  "{{tsa_host_pub_key}}"
-  EOF
-  worker_key = <<-EOF
-  "{{worker_key}}"
-  EOF
-}
-
-
-github_vpc = {
-{%- for k, v in ucfs['github']['vpc'].items() %}
-  {{ k }} = "{{ v }}"{% endfor %}
-}

@@ -25,12 +25,7 @@
 #   })
 # }
 
-# variable "concourse_worker_config" {
-#   type = object({
-#     tsa_host_pub_key = string,
-#     worker_key       = string,
-#   })
-# }
+
 
 variable "parent_domain_name" {
   description = "parent domain name for CI"
@@ -58,20 +53,6 @@ variable "enterprise_github_url" {
 #   default = "169.254.169.254,169.254.169.123,.amazonaws.com"
 # }
 
-# variable "github_vpc" {
-#   type = object({
-#     id         = string
-#     owner      = string
-#     cidr_block = string
-#     region     = string
-#   })
-#   default = {
-#     id         = ""
-#     owner      = ""
-#     cidr_block = ""
-#     region     = ""
-#   }
-# }
 
 variable "costcode" {
   type    = string

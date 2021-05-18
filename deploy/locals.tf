@@ -11,9 +11,9 @@ locals {
 
     Owner = "dataworks platform"
 
-    Name         = "Cognito"
+    Name         = "concourse"
     Environment  = terraform.workspace == "default" ? "development" : terraform.workspace
-    Application  = "Cognito"
+    Application  = "concourse"
     Persistence  = "True"
     AutoShutdown = "False"
     Costcode     = var.costcode

@@ -1,5 +1,5 @@
 locals {
-  name   = "Cognito"
+  name   = "concourse"
   region = data.aws_region.current.name
 }
 
