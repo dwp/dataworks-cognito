@@ -29,6 +29,9 @@ meta:
             - -exc
             - |
               python bootstrap_terraform.py
+              sed -i '/^assume_role/ d' terraform.tfvars
+              cp terraform.tf ../terraform-config
+              cp terraform.tfvars ../terraform-config
               cp terraform.tf ../terraform-bootstrap
           dir: dataworks-cognito
         inputs:
@@ -37,6 +40,7 @@ meta:
           - name: terraform-bootstrap
       params:
         AWS_REGION: eu-west-2
+        AWS_SECRETS_ROLE: arn:aws:iam::((aws_account.management-dev)):role/ci
     terraform-apply:
       task: terraform-apply
       .: (( inject meta.plan.terraform-common-config ))
