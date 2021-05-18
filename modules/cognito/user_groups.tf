@@ -1,6 +1,9 @@
-resource aws_cognito_user_group groups {
-  for_each = toset(var.clients)
+resource aws_cognito_user_group admins {
+  name         = "admins"
+  user_pool_id = aws_cognito_user_pool.concourse.id
+}
 
-  name         = each.value
+resource aws_cognito_user_group dataworks {
+  name         = "dataworks"
   user_pool_id = aws_cognito_user_pool.concourse.id
 }
