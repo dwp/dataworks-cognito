@@ -1,15 +1,15 @@
 jobs:
-  - name: qa
+  - name: management
     max_in_flight: 1
     plan:
       - get: dataworks-cognito
         trigger: true
-        passed:
-          - development
       - .: (( inject meta.plan.terraform-bootstrap ))
+        params:
+          TF_WORKSPACE: management
       - .: (( inject meta.plan.terraform-apply ))
         params:
-          TF_WORKSPACE: 'qa'
+          TF_WORKSPACE: management
       - .: (( inject meta.plan.terraform-plan ))
         params:
-          TF_WORKSPACE: 'qa'
+          TF_WORKSPACE: management

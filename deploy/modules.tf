@@ -8,5 +8,5 @@ module "cognito" {
 
   root_dns_names = values(local.root_dns_name)
   domain         = local.cognito_domain
-  loadbalancer = "ci.wip.dataworks.dwp.gov.uk"
+  loadbalancer   = "ci.wip.dataworks.dwp.gov.uk"
 }
