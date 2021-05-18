@@ -3,6 +3,8 @@ jobs:
     max_in_flight: 1
     plan:
       - get: dataworks-cognito
+        passed: 
+          - management-dev
         trigger: true
       - .: (( inject meta.plan.terraform-bootstrap ))
         params:
