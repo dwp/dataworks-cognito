@@ -72,6 +72,10 @@ meta:
               terraform workspace show
               terraform init
 
+              terraform import module.cognito.aws_cognito_user_pool_client.app_client eu-west-2_RhUE59mNx/4itjjfcd8qjme78qvjbv6sahcj
+
+              
+
               if [[ "${SKIP_EXIT_CODE}" == "true" ]]; then
                   echo "Performing plan with no exit code check due to SKIP_EXIT_CODE of '${SKIP_EXIT_CODE}'"
                   terraform plan
