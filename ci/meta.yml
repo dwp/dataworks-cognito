@@ -50,6 +50,7 @@ meta:
             - -exc
             - |
               cp ../terraform-config/terraform.tf .
+              cp ../terraform-config/terraform.tfvars .
               terraform workspace show
               terraform init
               terraform plan -out terraform.plan
@@ -67,8 +68,8 @@ meta:
           args:
             - -exc
             - |
-              cp ../../terraform-config/terraform.tf .
-              cp ../../terraform-config/terraform.tfvars .
+              cp ../terraform-config/terraform.tf .
+              cp ../terraform-config/terraform.tfvars .
               terraform workspace show
               terraform init
 
