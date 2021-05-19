@@ -49,8 +49,8 @@ meta:
           args:
             - -exc
             - |
-              cp ../terraform-config/terraform.tf .
-              cp ../terraform-config/terraform.tfvars .
+              cp ../terraform-config/terraform.tf deploy/terraform.tf
+              cp ../terraform-config/terraform.tfvars deploy/terraform.tfvars
               terraform workspace show
               terraform init
               terraform plan -out terraform.plan
@@ -68,8 +68,8 @@ meta:
           args:
             - -exc
             - |
-              cp ../terraform-config/terraform.tf .
-              cp ../terraform-config/terraform.tfvars .
+              cp ../terraform-config/terraform.tf deploy/terraform.tf
+              cp ../terraform-config/terraform.tfvars deploy/terraform.tfvars
               terraform workspace show
               terraform init
 
@@ -80,7 +80,7 @@ meta:
                 echo "Performing plan with exit code check due to SKIP_EXIT_CODE of '${SKIP_EXIT_CODE}'"
                 terraform plan -detailed-exitcode
               fi
-          dir: dataworks-cognito/deploy
+          dir: dataworks-cognito
         inputs:
           - name: dataworks-cognito
           - name: terraform-config
