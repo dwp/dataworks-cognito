@@ -1,15 +1,18 @@
 jobs:
-  - name: qa
+  - name: management
     max_in_flight: 1
     plan:
       - get: dataworks-cognito
+        passed: 
+          - management-dev
         trigger: true
-        passed:
-          - development
       - .: (( inject meta.plan.terraform-bootstrap ))
+        params:
+          TF_WORKSPACE: management
+          AWS_SECRETS_ROLE: arn:aws:iam::((aws_account.management)):role/ci
       - .: (( inject meta.plan.terraform-apply ))
         params:
-          TF_WORKSPACE: 'qa'
+          TF_WORKSPACE: management
       - .: (( inject meta.plan.terraform-plan ))
         params:
-          TF_WORKSPACE: 'qa'
+          TF_WORKSPACE: management

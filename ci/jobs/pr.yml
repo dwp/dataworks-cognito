@@ -1,31 +1,35 @@
 jobs:
-  - name: dataworks-cognito-pr
-    plan:
-      - get: dataworks-cognito-pr
-        trigger: true
-        version: every
-      - put: dataworks-cognito-pr
-        params:
-          path: dataworks-cognito-pr
-          status: pending
-        input_mapping:
-          dataworks-cognito: dataworks-cognito-pr
-      - .: (( inject meta.plan.terraform-bootstrap ))
-        input_mapping:
-          dataworks-cognito: dataworks-cognito-pr
-      - .: (( inject meta.plan.terraform-plan ))
-        input_mapping:
-          dataworks-cognito: dataworks-cognito-pr
-        params:
-          TF_WORKSPACE: 'qa'
-          DETAILED_EXITCODE: ''
-        on_failure:
-          put: dataworks-cognito-pr
-          params:
-            path: dataworks-cognito-pr
-            status: failure
-        on_success:
-          put: dataworks-cognito-pr
-          params:
-            path: dataworks-cognito-pr
-            status: success
+- name: dataworks-cognito-pr
+  plan:
+  - get: dataworks-cognito-pr
+    trigger: true
+    version: every
+  - put: dataworks-cognito-pr
+    params:
+      path: dataworks-cognito-pr
+      status: pending
+  - .: (( inject meta.plan.terraform-bootstrap ))
+    task: terraform-bootstrap-management
+    input_mapping:
+      dataworks-cognito: dataworks-cognito-pr
+    params:
+      TF_WORKSPACE: management
+      AWS_SECRETS_ROLE: arn:aws:iam::((aws_account.management)):role/ci
+
+  - .: (( inject meta.plan.terraform-plan ))
+    task: terraform-plan-management
+    input_mapping:
+      dataworks-cognito: dataworks-cognito-pr
+    params:
+      TF_WORKSPACE: management
+      SKIP_EXIT_CODE: "true"
+    on_failure:
+      put: dataworks-cognito-pr
+      params:
+        path: dataworks-cognito-pr
+        status: failure
+    on_success:
+      put: dataworks-cognito-pr
+      params:
+        path: dataworks-cognito-pr
+        status: success

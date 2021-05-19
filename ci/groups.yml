@@ -1,8 +1,12 @@
 groups:
   - name: master
     jobs:
-      - development
-      - qa
+      - management-dev
+      - management
   - name: pull-request
     jobs:
       - dataworks-cognito-pr
+  - name: user-administration
+    jobs:
+      - management-user-admin
+      - management-dev-user-admin

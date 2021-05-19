@@ -1,0 +1,160 @@
+terraform {
+  required_version = "0.12.19"
+  required_providers {
+    random = "~> 2.0"
+    tls    = "~> 2.0"
+  }
+
+  backend "s3" {
+    bucket         = "{{terraform.state_file_bucket}}"
+    key            = "terraform/dataworks/dataworks-cognito.tfstate"
+    region         = "{{terraform.state_file_region}}"
+    encrypt        = true
+    kms_key_id     = "arn:aws:kms:{{terraform.state_file_region}}:{{terraform.state_file_account}}:key/{{terraform.state_file_kms_key}}"
+    dynamodb_table = "remote_state_locks"
+  }
+}
+
+data "terraform_remote_state" "internet_egress" {
+  backend   = "s3"
+  workspace = terraform.workspace
+
+  config = {
+    bucket         = "{{terraform.state_file_bucket}}"
+    key            = "terraform/dataworks/aws-internet-egress.tfstate"
+    region         = "{{terraform.state_file_region}}"
+    encrypt        = true
+    kms_key_id     = "arn:aws:kms:{{terraform.state_file_region}}:{{terraform.state_file_account}}:key/{{terraform.state_file_kms_key}}"
+    dynamodb_table = "remote_state_locks"
+  }
+}
+
+
+data "terraform_remote_state" "internet_ingress" {
+  backend   = "s3"
+  workspace = terraform.workspace
+
+  config = {
+    bucket         = "{{terraform.state_file_bucket}}"
+    key            = "terraform/dataworks/dataworks-internet-ingress.tfstate"
+    region         = "{{terraform.state_file_region}}"
+    encrypt        = true
+    kms_key_id     = "arn:aws:kms:{{terraform.state_file_region}}:{{terraform.state_file_account}}:key/{{terraform.state_file_kms_key}}"
+    dynamodb_table = "remote_state_locks"
+  }
+}
+
+data "terraform_remote_state" "security-tools" {
+  backend = "s3"
+  workspace = local.environment
+
+  config = {
+    bucket         = "{{terraform.state_file_bucket}}"
+    key            = "terraform/dataworks/aws-security-tools.tfstate"
+    region         = "{{terraform.state_file_region}}"
+    encrypt        = true
+    kms_key_id     = "arn:aws:kms:{{terraform.state_file_region}}:{{terraform.state_file_account}}:key/{{terraform.state_file_kms_key}}"
+    dynamodb_table = "remote_state_locks"
+  }
+}
+
+variable "assume_role" {
+  default = "ci"
+}
+
+variable "region" {
+  default = "eu-west-2"
+}
+
+provider "aws" {
+  version = "~> 3.25.0"
+  region  = var.region
+
+  assume_role {
+    role_arn = "arn:aws:iam::${lookup(local.account, local.environment)}:role/${var.assume_role}"
+  }
+}
+
+provider "aws" {
+  version = "~> 3.25.0"
+  region  = var.region
+  alias   = "ssh_bastion"
+
+  assume_role {
+    role_arn = "arn:aws:iam::${lookup(local.account, local.environment)}:role/${var.assume_role}"
+  }
+}
+
+// Get AWS Account ID for credentials in use
+data "aws_caller_identity" "current" {}
+
+data "aws_region" "current" {}
+data "aws_availability_zones" "available" {}
+
+data "http" "github" {
+  url = "https://api.github.com/meta"
+}
+
+locals {
+  github_metadata = jsondecode(data.http.github.body)
+}
+
+data "aws_secretsmanager_secret_version" "internet_ingress" {
+  secret_id = "/concourse/dataworks/internet-ingress"
+}
+
+locals {
+  account = { {% for key, value in accounts.items() %}
+    {{key}} = "{{value}}"{% endfor %}
+  }
+}
+
+locals {
+  name = "aws-concourse"
+
+  parent_domain_name = {
+    management-dev = "ci.wip.${var.parent_domain_name}"
+    management = "ci.${var.parent_domain_name}"
+  }
+
+  environment = terraform.workspace == "default" ? "management-dev" : terraform.workspace
+
+  tags = {
+  {% for key, value in common_tags.items() %}
+    {{key}} = "{{value}}"{% endfor %}
+    Name         = "concourse"
+    Environment  = local.environment
+    Project      = "ci"
+    Application  = "aws-concourse"
+    Persistence  = "Ignore"
+    AutoShutdown = "False"
+  }
+
+  root_dns_name = {
+    development = "dev.wip.{{dataworks_domain_name}}"
+    qa          = "qa.wip.{{dataworks_domain_name}}"
+    integration = "int.wip.{{dataworks_domain_name}}"
+    preprod     = "pre.{{dataworks_domain_name}}"
+    production  = "{{dataworks_domain_name}}"
+  }
+
+  cidr_block = {
+  {% for environment, ranges in cidr_block.items() %}
+      {{ environment }} = {
+        {% for key, value in ranges.items() %}
+          {{ key }} = "{{ value }}"{% endfor %}
+      } {% endfor %}
+  }
+
+  cognito_domain = local.environment == "management" ? "concourse-dataworks" : "concourse-dataworks-dev"
+
+  no_proxy = "${join(",", local.no_proxy_list)},${var.enterprise_github_url}"
+
+  ami_id = local.environment == "management" ? "ami-05c376e3e23319d73" : "ami-0a43b07f9f26c8cd2"
+
+  enterprise_github_certs = [
+    "s3://dw-${local.environment}-public-certificates/ca_certificates/ucfs/ucd_ca.pem",
+    "s3://dw-${local.environment}-public-certificates/ca_certificates/ucfs/ucd_clientca.pem"
+  ]
+
+}
