@@ -57,7 +57,7 @@ meta:
           dir: dataworks-cognito
         inputs:
           - name: dataworks-cognito
-          - name: terraform-bootstrap
+          - name: terraform-config
     terraform-plan:
       task: terraform-plan
       .: (( inject meta.plan.terraform-common-config ))
