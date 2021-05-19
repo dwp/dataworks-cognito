@@ -49,7 +49,7 @@ meta:
           args:
             - -exc
             - |
-              cp ../terraform-bootstrap/terraform.tf .
+              cp ../terraform-config/terraform.tf .
               terraform workspace show
               terraform init
               terraform plan -out terraform.plan
