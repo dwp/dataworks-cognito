@@ -14,5 +14,3 @@ variable root_dns_names {
 }
 
 variable "loadbalancer" {}
-
-variable "grafana_fqdn" {}
