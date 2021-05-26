@@ -5,7 +5,7 @@ resources:
       repository: dwp/dataworks-cognito
       access_token: ((dataworks-secrets.concourse_github_pat))
     webhook_token: ((dataworks.concourse_github_webhook_token))
-    check_every: 720h
+    check_every: 5m
 
   - name: dataworks-cognito
     type: git
@@ -14,7 +14,19 @@ resources:
       uri: https://github.com/dwp/dataworks-cognito.git
       access_token: ((dataworks-secrets.concourse_github_pat))
     webhook_token: ((dataworks.concourse_github_webhook_token))
-    check_every: 720h
+    check_every: 5m
+
+  - name: dataworks-cognito-update-pipeline
+    type: git
+    source:
+      branch: master
+      uri: https://github.com/dwp/dataworks-cognito.git
+      access_token: ((dataworks-secrets.concourse_github_pat))
+      paths:
+        - ci/*
+        - aviator.yml
+    webhook_token: ((dataworks.concourse_github_webhook_token))
+    check_every: 5m
 
   - name: aws-concourse-users
     type: git
