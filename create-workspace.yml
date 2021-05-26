@@ -3,8 +3,8 @@ platform: linux
 image_resource:
   type: docker-image
   source:
-    repository: ((dataworks.terraform_repository))
-    tag: ((dataworks.terraform_version))
+    repository: hashicorp/terraform
+    tag: 0.12.31
 params:
   TF_INPUT: false
   WORKSPACE: ((workspace))
