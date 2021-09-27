@@ -21,4 +21,4 @@ User management:
         }
 ```
 
-You cannot remove a user from the JSON without etting them to `"disabled": "true"`, creating a PR, merging and running the pipeline.  All that will do is remove the user from the JSON.  They, and their access, will remain in Cognito.
+You cannot remove a user from the JSON without setting them to `"disabled": "true"`, creating a PR, merging and running the pipeline.  All that will do is remove the user from the JSON.  They, and their access, will remain in Cognito.
