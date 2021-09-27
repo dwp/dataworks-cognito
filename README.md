@@ -2,21 +2,23 @@
 
 ## Centralised infrastructure for Cognito
 
-This repo contains Makefile and base terraform folders and jinja2 files to fit the standard pattern.
-This repo is a base to create new Terraform repos, renaming the template files and adding the githooks submodule, making the repo ready for use.
+This repo mangages the infrastrucutre for AWS Cognito.  It holds the `user pool` known as `concourse` which offers managed authentication for DataWorks services, namely Concourse and Grafana.
 
-Running aviator will create the pipeline required on the AWS-Concourse instance, in order pass a mandatory CI ran status check.  this will likely require you to login to Concourse, if you haven't already.
+The users are managed useing AWS SecretsManager, and can be found [here](https://git.ucd.gpn.gov.uk/dip/dataworks-secrets/tree/master/concourse/dataworks/concourse-cognito).  This is managed within JSON, and passed through a [pipeline](https://ci.dataworks.dwp.gov.uk/teams/dataworks/pipelines/dataworks-cognito?group=user-administration) which checks for various flags being set and carrying out the relevant actions.  See below:
 
-After cloning this repo, please generate `terraform.tf` and `terraform.tfvars` files:  
-`make bootstrap`
+User management:
+```
+        {
+            "username": "myusername",
+            "email": "firstname.surname@engineering.digital.dwp.gov.uk",
+            "phone": "+441234567890",
+            "groups": [
+                "dataworks", <-- Grants access to Concourse.  Omit this to remove access.
+                "grafana-editor" <-- Grants access to Grafana.  Omit this to remove access.
+            ],
+            "disabled": "false", <-- Setting this to true, removes the user from the Cognito userpool.
+            "reset": "false" <-- Setting this to true, causes Cognito to email the user with a new temporary password.  n.b. This only works if the user has entered the first temporary password, and set their own password.  If not, the user will need to be removed from the user pool and re-added.
+        }
+```
 
-In addition, you may want to do the following: 
-
-1. Create non-default Terraform workspaces as and if required:  
-    `make terraform-workspace-new workspace=<workspace_name>` e.g.  
-    ```make terraform-workspace-new workspace=qa```
-
-1. Configure Concourse CI pipeline:
-    1. Add/remove jobs in `./ci/jobs` as required 
-    1. Create CI pipeline:  
-`aviator`
+You cannot remove a user from the JSON without etting them to `"disabled": "true"`, creating a PR, merging and running the pipeline.  All that will do is remove the user from the JSON.  They, and their access, will remain in Cognito.
