@@ -13,3 +13,9 @@ resource "aws_cognito_user_group" "grafana_editor" {
   user_pool_id = aws_cognito_user_pool.concourse.id
   description  = "Grafana Editors"
 }
+
+resource aws_cognito_user_group sre {
+  name         = "sre"
+  user_pool_id = aws_cognito_user_pool.concourse.id
+  description  = "Concourse pipeline operators from the SRE team"
+}
