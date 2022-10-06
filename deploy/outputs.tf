@@ -4,4 +4,5 @@
 
 output "cognito" {
   value = module.cognito.outputs
+  sensitive = true
 }
