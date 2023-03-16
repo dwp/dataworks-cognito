@@ -6,18 +6,8 @@ locals {
   }
 
   common_tags = {
-
-    CreatedBy = "terraform"
-
-    Owner = "dataworks platform"
-
-    Name         = "concourse"
-    Environment  = terraform.workspace == "default" ? "development" : terraform.workspace
-    Application  = "concourse"
-    Persistence  = "True"
-    AutoShutdown = "False"
-    Costcode     = var.costcode
-    Team         = "DataWorks"
+    DWX_Environment  = terraform.workspace == "default" ? "development" : terraform.workspace
+    DWX_Application  = "concourse"
   }
 
   env_prefix = {
